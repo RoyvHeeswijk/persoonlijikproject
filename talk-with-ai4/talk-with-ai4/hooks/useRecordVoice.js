@@ -28,7 +28,7 @@ export const useRecordVoice = () => {
 
     const getText = async (base64data) => {
         try {
-            const response = await fetch("/api/speechToText.js", {
+            const response = await fetch("../src/pages/api/speechToText", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

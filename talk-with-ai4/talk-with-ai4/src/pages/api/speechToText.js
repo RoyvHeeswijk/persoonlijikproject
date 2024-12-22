@@ -1,44 +1,58 @@
 import { NextResponse } from "next/server";
 import fs from "fs";
+import path from "path";
 import * as dotenv from "dotenv";
 import OpenAI from "openai";
-import { env } from "../../config/env";
 
 dotenv.config();
 
 const openai = new OpenAI({
-    apiKey: env.OPENAI_API_KEY,
+    apiKey: process.env.OPENAI_API_KEY, 
 });
 
-export async function POST(req) {
-    const body = await req.json();
-
-    const base64Audio = body.audio;
-
-    // Convert the base64 audio data to a Buffer
-    const audio = Buffer.from(base64Audio, "base64");
-
-    // Define the file path for storing the temporary WAV file
-    const filePath = "tmp/input.wav";
+export default async function POST(req) {
+    const tmpDir = path.join(process.cwd(), "tmp");
+    const filePath = path.join(tmpDir, "input.wav");
 
     try {
-        // Write the audio data to a temporary WAV file synchronously
+        const body = await req.json();
+        const base64Audio = body.audio;
+
+        // Convert base64 to Buffer
+        const audio = Buffer.from(base64Audio, "base64");
+
+        // Ensure tmp directory exists
+        if (!fs.existsSync(tmpDir)) {
+            fs.mkdirSync(tmpDir);
+        }
+
+        // Write audio to a temporary file
         fs.writeFileSync(filePath, audio);
 
-        // Create a readable stream from the temporary WAV file
+        // Create a readable stream
         const readStream = fs.createReadStream(filePath);
 
+        // Call OpenAI API
         const data = await openai.audio.transcriptions.create({
             file: readStream,
             model: "whisper-1",
         });
 
-        // Remove the temporary file after successful processing
+        // Clean up temporary file
         fs.unlinkSync(filePath);
 
         return NextResponse.json(data);
     } catch (error) {
         console.error("Error processing audio:", error);
-        return NextResponse.error();
+
+        // Clean up temporary file in case of error
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
+
+        return NextResponse.json(
+            { error: "Error processing audio", details: error.message },
+            { status: 500 }
+        );
     }
 }
