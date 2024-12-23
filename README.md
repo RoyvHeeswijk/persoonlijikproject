@@ -1,6 +1,6 @@
 # README: Spraak naar Tekst met Next.js
 
-Dit project zet gesproken woorden om naar tekst met behulp van Next.js. Het maakt gebruik van de Web Speech API voor spraakherkenning.
+Dit project zet gesproken woorden om naar tekst met behulp van Next.js. Het maakt gebruik van de OPENAI API voor spraakherkenning.
 
 ## Installatie
 
