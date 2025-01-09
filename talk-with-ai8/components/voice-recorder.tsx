@@ -73,9 +73,9 @@ export function VoiceRecorder() {
     }
 
     return (
-        <Card className="w-full max-w-md mx-auto">
+        <Card className="w-full max-w-md mx-auto text-black">
             <CardHeader>
-                <CardTitle className="text-center">Voice Recorder</CardTitle>
+                <CardTitle className="text-center text-black">Voice Recorder</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                 <div className="flex justify-center gap-4">
@@ -85,12 +85,12 @@ export function VoiceRecorder() {
                     >
                         {isRecording ? (
                             <>
-                                <Square className="w-4 h-4 mr-2" />
+                                <Square className="w-4 h-4 mr-2 text-black" />
                                 Stop Recording
                             </>
                         ) : (
                             <>
-                                <Mic className="w-4 h-4 mr-2" />
+                                <Mic className="w-4 h-4 mr-2 text-black" />
                                 Start Recording
                             </>
                         )}
@@ -119,8 +119,8 @@ export function VoiceRecorder() {
 
                 {transcription && (
                     <div className="space-y-2">
-                        <h3 className="font-medium">Transcription:</h3>
-                        <p className="p-4 rounded-lg bg-muted">{transcription}</p>
+                        <h3 className="font-medium text-black">Transcription:</h3>
+                        <p className="p-4 rounded-lg bg-muted text-black">{transcription}</p>
                     </div>
                 )}
             </CardContent>
