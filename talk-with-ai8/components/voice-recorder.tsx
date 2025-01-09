@@ -11,11 +11,13 @@ export function VoiceRecorder() {
     const [audioUrl, setAudioUrl] = useState<string | null>(null)
     const [transcription, setTranscription] = useState<string>('')
     const [isTranscribing, setIsTranscribing] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const mediaRecorderRef = useRef<MediaRecorder | null>(null)
     const chunksRef = useRef<Blob[]>([])
 
     const startRecording = async () => {
         try {
+            setError(null)
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
             const mediaRecorder = new MediaRecorder(stream)
             mediaRecorderRef.current = mediaRecorder
@@ -26,16 +28,28 @@ export function VoiceRecorder() {
             }
 
             mediaRecorder.onstop = async () => {
-                const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' })
-                const url = URL.createObjectURL(audioBlob)
-                setAudioUrl(url)
-
                 try {
+                    const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' })
+                    const url = URL.createObjectURL(audioBlob)
+                    setAudioUrl(url)
+
                     setIsTranscribing(true)
                     const text = await transcribeAudio(audioBlob)
+                    if (!text) {
+                        throw new Error('No transcription returned')
+                    }
                     setTranscription(text)
                 } catch (error) {
-                    console.error('Transcription error:', error)
+                    const errorMessage = error instanceof Error ? error.message : 'Unknown transcription error'
+                    // Check if the error is a quota exceeded error
+                    if (errorMessage.includes('insufficient_quota') || errorMessage.includes('exceeded your current quota')) {
+                        const quotaError = 'OpenAI API quota exceeded. Please check your billing details or try again later.'
+                        console.error('Transcription quota error:', quotaError)
+                        setError(quotaError)
+                    } else {
+                        console.error('Transcription error:', errorMessage)
+                        setError(`Failed to transcribe audio: ${errorMessage}`)
+                    }
                 } finally {
                     setIsTranscribing(false)
                 }
@@ -44,7 +58,9 @@ export function VoiceRecorder() {
             mediaRecorder.start()
             setIsRecording(true)
         } catch (error) {
-            console.error('Error accessing microphone:', error)
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+            console.error('Error accessing microphone:', errorMessage)
+            setError(`Failed to access microphone: ${errorMessage}`)
         }
     }
 
@@ -81,6 +97,12 @@ export function VoiceRecorder() {
                     </Button>
                 </div>
 
+                {error && (
+                    <div className="p-4 text-sm text-red-500 bg-red-50 rounded-lg">
+                        {error}
+                    </div>
+                )}
+
                 {audioUrl && (
                     <div className="space-y-2">
                         <h3 className="font-medium">Playback:</h3>
@@ -105,4 +127,3 @@ export function VoiceRecorder() {
         </Card>
     )
 }
-
