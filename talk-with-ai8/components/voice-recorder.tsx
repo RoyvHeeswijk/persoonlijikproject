@@ -6,10 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
 import { Mic, Square, Play, Loader2 } from 'lucide-react'
 import { transcribeAudio } from '../actions/transcribe'
 
+export let transcripttext = ''
+
 export function VoiceRecorder() {
     const [isRecording, setIsRecording] = useState(false)
-    const [audioUrl, setAudioUrl] = useState<string | null>(null)
-    const [transcription, setTranscription] = useState<string>('')
     const [isTranscribing, setIsTranscribing] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const mediaRecorderRef = useRef<MediaRecorder | null>(null)
@@ -30,15 +30,12 @@ export function VoiceRecorder() {
             mediaRecorder.onstop = async () => {
                 try {
                     const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' })
-                    const url = URL.createObjectURL(audioBlob)
-                    setAudioUrl(url)
-
                     setIsTranscribing(true)
                     const text = await transcribeAudio(audioBlob)
                     if (!text) {
                         throw new Error('No transcription returned')
                     }
-                    setTranscription(text)
+                    transcripttext = text
                 } catch (error) {
                     const errorMessage = error instanceof Error ? error.message : 'Unknown transcription error'
                     // Check if the error is a quota exceeded error
@@ -74,26 +71,12 @@ export function VoiceRecorder() {
 
     return (
         <Card className="w-full max-w-md mx-auto text-black">
-            <CardHeader>
-                <CardTitle className="text-center text-black">Voice Recorder</CardTitle>
-            </CardHeader>
             <CardContent className="space-y-4">
                 <div className="flex justify-center gap-4">
                     <Button
                         onClick={isRecording ? stopRecording : startRecording}
                         variant={isRecording ? "destructive" : "default"}
-                    >
-                        {isRecording ? (
-                            <>
-                                <Square className="w-4 h-4 mr-2 text-black" />
-                                Stop Recording
-                            </>
-                        ) : (
-                            <>
-                                <Mic className="w-4 h-4 mr-2 text-black" />
-                                Start Recording
-                            </>
-                        )}
+                    >     
                     </Button>
                 </div>
 
@@ -103,24 +86,10 @@ export function VoiceRecorder() {
                     </div>
                 )}
 
-                {audioUrl && (
-                    <div className="space-y-2">
-                        <h3 className="font-medium">Playback:</h3>
-                        <audio controls src={audioUrl} className="w-full" />
-                    </div>
-                )}
-
                 {isTranscribing && (
                     <div className="flex items-center justify-center gap-2 text-muted-foreground">
                         <Loader2 className="w-4 h-4 animate-spin" />
                         Transcribing...
-                    </div>
-                )}
-
-                {transcription && (
-                    <div className="space-y-2">
-                        <h3 className="font-medium text-black">Transcription:</h3>
-                        <p className="p-4 rounded-lg bg-muted text-black">{transcription}</p>
                     </div>
                 )}
             </CardContent>
