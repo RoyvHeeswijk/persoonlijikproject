@@ -2,20 +2,36 @@
 
 import { useState, useEffect } from 'react'
 import { transcripttext, VoiceRecorder } from '../../components/voice-recorder'
+import { Button } from '../../components/ui/button'
+import { Send } from 'lucide-react'
 
 export default function Home() {
-  const [displayText, setDisplayText] = useState('')
+  const [messages, setMessages] = useState<string[]>([])
+  const [inputMessage, setInputMessage] = useState('')
 
-  // Update displayText whenever transcripttext changes
+
   useEffect(() => {
     const checkTranscript = setInterval(() => {
-      if (transcripttext !== displayText) {
-        setDisplayText(transcripttext)
+      if (transcripttext && transcripttext !== inputMessage) {
+        setInputMessage(transcripttext)
       }
     }, 100)
 
     return () => clearInterval(checkTranscript)
-  }, [displayText])
+  }, [inputMessage])
+
+  const handleSend = () => {
+    if (inputMessage.trim()) {
+      setMessages(prev => [...prev, inputMessage])
+      setInputMessage('') 
+    }
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSend()
+    }
+  }
 
   return (
     <main className="bg-gray-50 min-h-screen">
@@ -35,7 +51,7 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Chat Area */}
+     
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           <div className="flex gap-2">
             <div className="bg-white rounded-lg p-3 max-w-[80%] shadow-sm">
@@ -43,28 +59,38 @@ export default function Home() {
               <span className="text-xs text-gray-500">09:55</span>
             </div>
           </div>
-          <div className="flex justify-end gap-2">
-            <div className="bg-blue-500 text-white rounded-lg p-3 max-w-[80%]">
-              <p className="text-sm text-white" style={{ fontSize: '15px' }}>{displayText}</p>
-              <span className="text-xs text-white/80">09:57</span>
+          {messages.map((message, index) => (
+            <div key={index} className="flex justify-end gap-2">
+              <div className="bg-blue-500 text-white rounded-lg p-3 max-w-[80%]">
+                <p className="text-sm text-white" style={{ fontSize: '15px' }}>{message}</p>
+                <span className="text-xs text-white/80">{new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })}</span>
+              </div>
             </div>
-          </div>
+          ))}
           <div className="flex justify-center">
         
           </div>
         </div>
 
-        {/* Input Area */}
+       
         <div className="p-4 bg-white border-t">
           <div className="flex items-center gap-2">
             <input 
               type="text"
               placeholder="Type a message..."
               className="flex-1 rounded-full border border-gray-200 px-4 py-2 focus:outline-none focus:border-blue-500 text-black"
+              value={inputMessage}
+              onChange={(e) => setInputMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
             />
-           
-              <VoiceRecorder />
-         
+            <Button 
+              onClick={handleSend}
+              className="rounded-full p-2"
+              variant="default"
+            >
+              <Send className="h-5 w-5" />
+            </Button>
+            <VoiceRecorder />
           </div>
         </div>
       </div>
