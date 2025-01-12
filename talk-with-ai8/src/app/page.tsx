@@ -8,22 +8,26 @@ import { Send } from 'lucide-react'
 export default function Home() {
   const [messages, setMessages] = useState<string[]>([])
   const [inputMessage, setInputMessage] = useState('')
-
+  const [showTextInput, setShowTextInput] = useState(false)
+  const [lastTranscriptUsed, setLastTranscriptUsed] = useState('')
 
   useEffect(() => {
     const checkTranscript = setInterval(() => {
-      if (transcripttext && transcripttext !== inputMessage) {
+      if (transcripttext && transcripttext !== inputMessage && transcripttext !== lastTranscriptUsed) {
         setInputMessage(transcripttext)
+        setShowTextInput(true)
       }
     }, 100)
 
     return () => clearInterval(checkTranscript)
-  }, [inputMessage])
+  }, [inputMessage, lastTranscriptUsed])
 
   const handleSend = () => {
     if (inputMessage.trim()) {
       setMessages(prev => [...prev, inputMessage])
-      setInputMessage('') 
+      setLastTranscriptUsed(transcripttext)
+      setInputMessage('')
+      setShowTextInput(false)
     }
   }
 
@@ -75,22 +79,28 @@ export default function Home() {
        
         <div className="p-4 bg-white border-t">
           <div className="flex items-center gap-2">
-            <input 
-              type="text"
-              placeholder="Type a message..."
-              className="flex-1 rounded-full border border-gray-200 px-4 py-2 focus:outline-none focus:border-blue-500 text-black"
-              value={inputMessage}
-              onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
-            />
-            <Button 
-              onClick={handleSend}
-              className="rounded-full p-2"
-              variant="default"
-            >
-              <Send className="h-5 w-5" />
-            </Button>
-            <VoiceRecorder />
+            {showTextInput && (
+              <>
+                <input 
+                  type="text"
+                  placeholder="Type a message..."
+                  className="flex-1 rounded-full border border-gray-200 px-4 py-2 focus:outline-none focus:border-blue-500 text-black"
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                />
+                <Button 
+                  onClick={handleSend}
+                  className="rounded-full p-2"
+                  variant="default"
+                >
+                  <Send className="h-5 w-5" />
+                </Button>
+              </>
+            )}
+            <div className={showTextInput ? "w-auto" : "w-full"}>
+              <VoiceRecorder />
+            </div>
           </div>
         </div>
       </div>

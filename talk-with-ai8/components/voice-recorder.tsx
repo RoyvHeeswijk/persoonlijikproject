@@ -89,7 +89,6 @@ export function VoiceRecorder() {
                 {isTranscribing && (
                     <div className="flex items-center justify-center gap-2 text-muted-foreground">
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Transcribing...
                     </div>
                 )}
             </CardContent>
