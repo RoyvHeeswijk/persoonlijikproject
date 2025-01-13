@@ -2,8 +2,8 @@
 
 import { useState, useRef } from 'react'
 import { Button } from '../components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
-import { Mic, Square, Play, Loader2 } from 'lucide-react'
+import { Card, CardContent } from '../components/ui/card'
+import { Mic, Square, Loader2 } from 'lucide-react'
 import { transcribeAudio } from '../actions/transcribe'
 
 export let transcripttext = ''
