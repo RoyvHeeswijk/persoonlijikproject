@@ -42,8 +42,8 @@ export default function Home() {
   }
 
   return (
-    <main className="bg-gray-50 min-h-screen">
-      <div className="max-w-md mx-auto h-screen flex flex-col">
+    <main className="bg-black min-h-screen">
+      <div className="max-w-md mx-auto h-screen flex flex-col bg-gray-50">
    
         <div className="bg-white p-4 flex items-center justify-between border-b">
           <div className="flex items-center gap-3">
@@ -64,7 +64,7 @@ export default function Home() {
           <div className="flex gap-2">
             <div className="bg-white rounded-lg p-3 max-w-[80%] shadow-sm">
               <p className="text-sm text-black">Hey! How are you?</p>
-              <span className="text-xs text-gray-500">09:55</span>
+              <span className="text-xs text-gray-500">{new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' })}</span>
             </div>
           </div>
           {messages.map((message, index) => (
@@ -105,6 +105,7 @@ export default function Home() {
             </div>
           )}
         </div>
+
 
        
         <div className="p-4 bg-white border-t">

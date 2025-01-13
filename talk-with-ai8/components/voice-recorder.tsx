@@ -72,13 +72,20 @@ export function VoiceRecorder() {
     return (
         <Card className="w-full max-w-md mx-auto text-black">
             <CardContent className="space-y-4">
-                <div className="flex justify-center gap-4">
-                    <Button
-                        onClick={isRecording ? stopRecording : startRecording}
-                        variant={isRecording ? "destructive" : "default"}
-                    >     
-                    </Button>
-                </div>
+                {!isTranscribing && (
+                    <div className="flex justify-center gap-4">
+                        <Button
+                            onClick={isRecording ? stopRecording : startRecording}
+                            variant={isRecording ? "destructive" : "default"}
+                        >     
+                            {isRecording ? (
+                                <Square className="h-[30px] w-[30px]" />
+                            ) : (
+                                <Mic className="h-[30px] w-[30px]" />
+                            )}
+                        </Button>
+                    </div>
+                )}
 
                 {error && (
                     <div className="p-4 text-sm text-red-500 bg-red-50 rounded-lg">
