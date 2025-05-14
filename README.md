@@ -1,7 +1,7 @@
 # Charla
 
 Dit project is een webapplicatie gebouwd met Next.js en Tailwind CSS die verbinding maakt met de OpenAI API om gesproken woorden naar tekst te vertalen.
-Het staat ook online op https://www.persoonlijkproject-saj9.vercel.app
+Het staat ook online op https://persoonlijkproject-saj9.vercel.app/
 
 ## Functies
 
